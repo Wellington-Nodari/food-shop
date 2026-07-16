@@ -1,4 +1,4 @@
-package com.application.food_shop.user.enums;
+package com.application.food_shop.domain.user.enums;
 
 public enum UserRole {
 

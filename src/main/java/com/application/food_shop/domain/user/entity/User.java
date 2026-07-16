@@ -1,7 +1,7 @@
-package com.application.food_shop.user.entity;
+package com.application.food_shop.domain.user.entity;
 
-import com.application.food_shop.address.entity.Address;
-import com.application.food_shop.user.enums.UserRole;
+import com.application.food_shop.domain.address.entity.Address;
+import com.application.food_shop.domain.user.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name="users")
+@Table(name="userinfo")
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 @Getter
@@ -29,12 +29,20 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private UserRole role;
-    private boolean active;
+    private Boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long editorUserId;
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Address> addresses;
+
+    public User(String email, String password, UserRole userRole, Boolean aTrue, LocalDateTime now) {
+        this.email = email;
+        this.password = password;
+        this.role = userRole;
+        this.active = aTrue;
+        this.createdAt = now;
+    }
 
 }

@@ -1,13 +1,11 @@
-package com.application.food_shop.address.entity;
+package com.application.food_shop.domain.address.entity;
 
-import com.application.food_shop.user.entity.User;
+import com.application.food_shop.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Table(name="address")
@@ -28,4 +26,13 @@ public class Address {
     private String complement;
     private String city;
     private String postalCode;
+
+    public Address(User user, String street, String number, String complement, String city, String postalCode) {
+        this.user = user;
+        this.street = street;
+        this.number = number;
+        this.complement = complement;
+        this.city = city;
+        this.postalCode = postalCode;
+    }
 }

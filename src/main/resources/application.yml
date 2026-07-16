@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgres://localhost:5432/food-shop
+    username: "${DB_USERNAME}"
+    password: "${DB_PASSWORD}"
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  config:
+    import: "optional:file:.env[.properties]"

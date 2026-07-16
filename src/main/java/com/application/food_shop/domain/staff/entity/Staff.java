@@ -1,6 +1,7 @@
-package com.application.food_shop.staff.entity;
+package com.application.food_shop.domain.staff.entity;
 
-import com.application.food_shop.user.entity.User;
+import com.application.food_shop.domain.staff.enums.StaffPositions;
+import com.application.food_shop.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,8 +27,18 @@ public class Staff {
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private String position;
+    @Enumerated(EnumType.STRING)
+    private StaffPositions position;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long editorUserId;
+
+    public Staff(User user, String firstName, String lastName, String phoneNumber, StaffPositions position,  LocalDateTime createdAt) {
+        this.user = user;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.position = position;
+        this.createdAt = createdAt;
+    }
 }
