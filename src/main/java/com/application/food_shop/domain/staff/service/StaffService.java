@@ -10,10 +10,10 @@ import com.application.food_shop.domain.staff.repository.StaffRepository;
 import com.application.food_shop.domain.user.entity.User;
 import com.application.food_shop.domain.user.enums.UserRole;
 import com.application.food_shop.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.application.food_shop.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 
@@ -32,10 +32,11 @@ public class StaffService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public void newStaff (NewStaffDTO dto) {
         LocalDateTime now = LocalDateTime.now();
         String encryptedPwd = passwordEncoder.encode(dto.getPassword());
-        StaffPositions position = StaffPositions.valueOf(dto.getPosition());
+        StaffPositions position = StaffPositions.valueOf(dto.getPosition().trim().toUpperCase());
 
         User user = new User(dto.getEmail(), encryptedPwd, UserRole.STAFF, true, now);
         userRepository.save(user);
@@ -46,35 +47,38 @@ public class StaffService {
         staffRepository.save(new Staff(user, dto.getFirstName(), dto.getLastName(), dto.getPhoneNumber(), position, now));
     }
 
-    public StaffDTO findById(@PathVariable Long id) {
-        Staff st = staffRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Staff Not Found"));
+    public StaffDTO findById(Long id) {
+        Staff staff = staffRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Staff with id " + id + " not found"));
 
-        return new StaffDTO(st.getId(), st.getFirstName(), st.getLastName(), st.getPosition(), st.getPhoneNumber());
+        return new StaffDTO(staff.getId(), staff.getFirstName(), staff.getLastName(), staff.getPosition(), staff.getPhoneNumber());
     }
 
     public StaffDTO findByName(String firstName, String lastName) {
-        Staff st = staffRepository.findByFirstNameAndLastName(firstName, lastName);
+        Staff staff = staffRepository.findByFirstNameAndLastName(firstName, lastName).orElseThrow(() -> new ResourceNotFoundException("Staff with name " + firstName + " " + lastName + " was not found"));
 
-        return new StaffDTO(st.getId(), st.getFirstName(), st.getLastName(), st.getPosition(), st.getPhoneNumber());
+        return new StaffDTO(staff.getId(), staff.getFirstName(), staff.getLastName(), staff.getPosition(), staff.getPhoneNumber());
     }
 
+    @Transactional
     public void updateStaff(Long id, StaffDTO dto) {
-        Staff st = staffRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Staff Not Found"));
+        LocalDateTime now = LocalDateTime.now();
+        Staff staff = staffRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Staff with id " + id + " not found"));
         StaffPositions position = dto.getPosition();
 
         if (dto.getFirstName() != null) {
-            st.setFirstName(dto.getFirstName());
+            staff.setFirstName(dto.getFirstName());
         }
         if (dto.getLastName() != null) {
-            st.setLastName(dto.getLastName());
+            staff.setLastName(dto.getLastName());
         }
         if (dto.getPhoneNumber() != null) {
-            st.setPhoneNumber(dto.getPhoneNumber());
+            staff.setPhoneNumber(dto.getPhoneNumber());
         }
         if (dto.getPosition() != null) {
-            st.setPosition(position);
+            staff.setPosition(position);
         }
+        staff.setUpdatedAt(now);
 
-        staffRepository.save(st);
+        staffRepository.save(staff);
     }
 }
