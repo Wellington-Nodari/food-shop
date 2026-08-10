@@ -1,10 +1,8 @@
 package com.application.food_shop.domain.user.controller;
 
-import com.application.food_shop.domain.user.enums.UserRole;
 import com.application.food_shop.domain.user.model.UserDTO;
 import com.application.food_shop.domain.user.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -1,7 +1,6 @@
 package com.application.food_shop.domain.menu.controller;
 
 import com.application.food_shop.domain.menu.entity.Menu;
-import com.application.food_shop.domain.menu.model.MenuDTO;
 import com.application.food_shop.domain.menu.service.MenuService;
 import org.springframework.web.bind.annotation.*;
 

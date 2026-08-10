@@ -10,9 +10,7 @@ import com.application.food_shop.domain.user.entity.User;
 import com.application.food_shop.domain.user.enums.UserRole;
 import com.application.food_shop.domain.user.repository.UserRepository;
 import com.application.food_shop.exception.ResourceNotFoundException;
-import com.application.food_shop.security.SecurityConfig;
 import jakarta.transaction.Transactional;
-import org.springframework.boot.security.autoconfigure.SecurityProperties;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

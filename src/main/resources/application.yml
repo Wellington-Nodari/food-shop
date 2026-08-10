@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/food-shop
-    username: "${DB_USERNAME}"
-    password: "${DB_PASSWORD}"
+    username: "${DB_USERNAME:Postgres}"
+    password: "${DB_PASSWORD:any_local_pwd}"
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -15,4 +15,4 @@ spring:
 api:
   security:
     token:
-      secret: ${JWT_SECRET}
+      secret: ${JWT_SECRET:super-secret-key-temporary-for-development-only}

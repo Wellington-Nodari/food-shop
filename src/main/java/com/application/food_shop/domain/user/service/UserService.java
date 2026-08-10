@@ -1,7 +1,6 @@
 package com.application.food_shop.domain.user.service;
 
 import com.application.food_shop.domain.user.entity.User;
-import com.application.food_shop.domain.user.enums.UserRole;
 import com.application.food_shop.domain.user.model.UserDTO;
 import com.application.food_shop.domain.user.repository.UserRepository;
 import com.application.food_shop.exception.ResourceNotFoundException;

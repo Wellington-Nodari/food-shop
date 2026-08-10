@@ -2,6 +2,7 @@ package com.application.food_shop.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,12 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${api.security.token.secret}")
-    private String secretKey;
+    private final String secretKey;
     private static final long EXPIRATION_TIME = 864_000_000;
+
+    public JwtService(@Value("${JWT_SECRET:super-secret-key-temp}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
