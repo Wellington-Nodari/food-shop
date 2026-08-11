@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.security.Keys;
@@ -30,8 +31,15 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         Instant now = Instant.now();
 
+        String role = userDetails.getAuthorities()
+                .stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElseThrow();
+
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("role", role)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(EXPIRATION_TIME)))
                 .signWith(getSigningKey())

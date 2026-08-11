@@ -1,6 +1,7 @@
 package com.application.food_shop.test;
 
 import com.application.food_shop.domain.login.AuthController;
+import com.application.food_shop.domain.login.AuthService;
 import com.application.food_shop.domain.login.LoginRequest;
 import com.application.food_shop.exception.GlobalExceptionHandler;
 import com.application.food_shop.security.CustomUserDetailsService;
@@ -10,13 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -34,7 +31,7 @@ public class AuthControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+    private AuthService authService;
 
     @MockitoBean
     private CustomUserDetailsService customUserDetailsService;
@@ -51,19 +48,7 @@ public class AuthControllerTest {
     void shouldReturnTokenOnValidLogin() throws Exception {
         LoginRequest request = new LoginRequest("willnik@test.ie", "12345wsaZxc!");
 
-        UserDetails mockUser = User.builder()
-                        .username("willnik@test.ie")
-                        .password("12345wsaZxc!")
-                        .roles("STAFF")
-                        .build();
-
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(new UsernamePasswordAuthenticationToken(mockUser,null, mockUser.getAuthorities()));
-
-        when(customUserDetailsService.loadUserByUsername("willnik@test.ie"))
-                .thenReturn(mockUser);
-
-        when(jwtService.generateToken(any()))
+        when(authService.login(any(LoginRequest.class)))
                 .thenReturn("mocked-jwt-token-xyz");
 
         mockMvc.perform(post("/api/auth/login")
@@ -72,13 +57,15 @@ public class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists())
                 .andExpect(jsonPath("$.token").value("mocked-jwt-token-xyz"));
+
+        verify(authService).login(any(LoginRequest.class));
     }
 
     @Test
     void shouldReturnUnauthorizedWhenAuthenticationFails() throws Exception {
         LoginRequest request = new LoginRequest("willnik@test.ie", "anyPassword");
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+        when(authService.login(any(LoginRequest.class)))
                 .thenThrow(new BadCredentialsException("Bad credentials"));
 
         mockMvc.perform(post("/api/auth/login")
@@ -86,7 +73,6 @@ public class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized());
 
-        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verifyNoInteractions(customUserDetailsService, jwtService);
+        verify(authService).login(any(LoginRequest.class));
     }
 }

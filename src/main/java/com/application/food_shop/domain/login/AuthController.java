@@ -17,25 +17,15 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final CustomUserDetailsService userDetailsService;
-    private final JwtService jwtService;
+    private final AuthService authService;
 
-    public AuthController(JwtService jwtService, AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService) {
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-
-        UserDetails user = userDetailsService.loadUserByUsername(request.getEmail());
-        String token = jwtService.generateToken(user);
-
+        String token = authService.login(request);
         return ResponseEntity.ok(Map.of("token", token));
     }
 

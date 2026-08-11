@@ -1,5 +1,6 @@
 package com.application.food_shop.security;
 
+import org.springframework.security.core.userdetails.User;
 import com.application.food_shop.domain.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,7 +18,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        com.application.food_shop.domain.user.entity.User user = userRepository.findByEmail(email).orElseThrow();
+
+        return User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .roles(user.getRole().name())
+                .build();
+
+
     }
 }
