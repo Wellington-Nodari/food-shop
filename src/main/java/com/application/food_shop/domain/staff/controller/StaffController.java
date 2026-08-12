@@ -18,7 +18,7 @@ public class StaffController {
     }
 
     @PostMapping("/new")
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN' ,'STAFF')")
     public void newStaff (@Valid @RequestBody NewStaffDTO dto) {
         staffService.newStaff(dto);
     }

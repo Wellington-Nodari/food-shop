@@ -5,10 +5,14 @@ import com.application.food_shop.domain.login.AuthService;
 import com.application.food_shop.domain.login.LoginRequest;
 import com.application.food_shop.exception.GlobalExceptionHandler;
 import com.application.food_shop.security.CustomUserDetailsService;
+import com.application.food_shop.security.JwtAuthenticationFilter;
 import com.application.food_shop.security.JwtService;
+import com.application.food_shop.security.TokenBlacklistService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -25,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AuthController.class)
 @Import(GlobalExceptionHandler.class)
+@AutoConfigureMockMvc(addFilters = false) // Isolates the Controller and ignores any blockers from JWT/Blacklist
 public class AuthControllerTest {
 
     @Autowired
@@ -42,6 +47,9 @@ public class AuthControllerTest {
     @MockitoBean
     private JwtService jwtService;
 
+    @MockitoBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
@@ -55,7 +63,6 @@ public class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").exists())
                 .andExpect(jsonPath("$.token").value("mocked-jwt-token-xyz"));
 
         verify(authService).login(any(LoginRequest.class));
@@ -74,5 +81,15 @@ public class AuthControllerTest {
                 .andExpect(status().isUnauthorized());
 
         verify(authService).login(any(LoginRequest.class));
+    }
+
+    @Test
+    void shouldLogoutSuccessfully() throws Exception {
+        Mockito.doNothing().when(authService).logout(any(), any());
+
+        mockMvc.perform(post("/api/auth/logout"))
+                .andExpect(status().isNoContent());
+
+        Mockito.verify(authService, Mockito.times(1)).logout(any(), any());
     }
 }
