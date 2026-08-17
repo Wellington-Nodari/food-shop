@@ -41,4 +41,10 @@ public class Staff {
         this.position = position;
         this.createdAt = createdAt;
     }
+
+    public String getFullName() {
+        String first = firstName != null ? firstName : "";
+        String last = lastName != null ? lastName : "";
+        return (first + " " + last).trim();
+    }
 }
