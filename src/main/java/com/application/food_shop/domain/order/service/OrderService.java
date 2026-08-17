@@ -18,10 +18,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -64,8 +61,8 @@ public class OrderService {
             item.setMenu(menu);
             item.setQuantity(itemReq.quantity());
 
-             item.setUnitPrice(BigDecimal.valueOf(menu.getPrice()));
-             item.setSubtotal(item.getUnitPrice(), item.getQuantity());
+            item.setUnitPrice(BigDecimal.valueOf(menu.getPrice()));
+            item.setSubtotal(item.getUnitPrice(), item.getQuantity());
 
             order.addOrderItem(item);
         }
@@ -96,15 +93,12 @@ public class OrderService {
     }
 
     public List<OrderResponse> findAll() {
-        List<OrderResponse> orderResponses = orderRepository.findAll().stream().map(this::createOrderResponse)
+        return orderRepository.findAll().stream().map(this::createOrderResponse)
                 .toList();
-
-
-        return orderResponses;
     }
 
-    public Order findById(Integer id) {
-        return orderRepository.findById(id).orElse(null);
+    public OrderResponse findById(Integer id) {
+        return createOrderResponse(Objects.requireNonNull(orderRepository.findById(id).orElse(null)));
     }
 
 }

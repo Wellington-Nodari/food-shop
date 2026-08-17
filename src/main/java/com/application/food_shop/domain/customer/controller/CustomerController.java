@@ -4,6 +4,7 @@ import com.application.food_shop.domain.customer.model.CustomerDTO;
 import com.application.food_shop.domain.customer.model.NewCustomerDTO;
 import com.application.food_shop.domain.customer.service.CustomerService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,6 +28,7 @@ public class CustomerController {
     }
 
     @GetMapping("/find/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public CustomerDTO findCustomer(@PathVariable Long id) {
         return customerService.findCustomerById(id);
     }

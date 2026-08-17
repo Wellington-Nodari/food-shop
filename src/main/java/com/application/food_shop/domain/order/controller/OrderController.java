@@ -34,7 +34,8 @@ public class OrderController {
     }
 
     @GetMapping("/find/{id}")
-    public Order findById(@PathVariable Integer id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    public OrderResponse findById(@PathVariable Integer id) {
         return orderService.findById(id);
     }
 }
